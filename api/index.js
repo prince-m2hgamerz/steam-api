@@ -1,218 +1,330 @@
 module.exports = (req, res) => {
-  res.setHeader("Content-Type", "text/html");
+  res.setHeader("Content-Type", "text/html; charset=utf-8");
 
   res.end(`
 <!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="UTF-8" />
-<title>M2H Steam API – Premium Docs & Playground</title>
+<title>M2H Steam API – Pro UI V3</title>
 <meta name="viewport" content="width=device-width, initial-scale=1">
 
 <style>
-  body {
-    margin: 0;
-    font-family: 'Inter', sans-serif;
-    background: linear-gradient(135deg, #0d0f1a, #111827, #0a0a0f);
-    background-size: 300% 300%;
-    animation: gradientShift 10s ease infinite;
-    color: #fff;
-  }
+/* -----------------------------------------------------------
+   APPLE SONOMA THEME + GLASS + DARK/LIGHT TOGGLE
+----------------------------------------------------------- */
 
-  @keyframes gradientShift {
-    0% { background-position: 0% 50%; }
-    50% { background-position: 100% 50%; }
-    100% { background-position: 0% 50%; }
-  }
+:root {
+  --bg: #f5f5f7;
+  --text: #1d1d1f;
+  --card-bg: rgba(255,255,255,0.65);
+  --border: rgba(0,0,0,0.12);
+  --shadow: rgba(0,0,0,0.08);
+  --hero-text: linear-gradient(120deg, #007aff, #ff2d55);
+}
+.dark {
+  --bg: #0d0d0f;
+  --text: #fafafa;
+  --card-bg: rgba(25,25,30,0.55);
+  --border: rgba(255,255,255,0.15);
+  --shadow: rgba(0,0,0,0.45);
+  --hero-text: linear-gradient(120deg, #0a84ff, #ff375f);
+}
 
-  .container {
-    width: 92%;
-    max-width: 1000px;
-    margin: auto;
-    padding: 40px 0;
-  }
+body {
+  margin:0;
+  background:var(--bg);
+  color:var(--text);
+  font-family:-apple-system, BlinkMacSystemFont, "Inter", sans-serif;
+}
 
-  h1 {
-    text-align: center;
-    font-size: 42px;
-    background: linear-gradient(90deg, #7afcff, #fe7eff, #ffe97a);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    margin-bottom: 10px;
-  }
+/* NAVBAR */
+.nav {
+  width:100%;
+  padding:18px;
+  text-align:center;
+  font-size:22px;
+  font-weight:600;
+  background:var(--card-bg);
+  backdrop-filter:saturate(180%) blur(20px);
+  position:sticky;
+  top:0;
+  z-index:999;
+  border-bottom:1px solid var(--border);
+}
 
-  p.center {
-    text-align: center;
-    opacity: 0.8;
-    margin-bottom: 40px;
-  }
+/* THEME TOGGLE – APPLE CONTROL CENTER STYLE */
+.toggle-outer {
+  width:52px;
+  height:28px;
+  border-radius:20px;
+  background:rgba(255,255,255,0.35);
+  backdrop-filter:blur(10px);
+  border:1px solid var(--border);
+  position:absolute;
+  top:16px;
+  right:16px;
+  cursor:pointer;
+  transition:0.3s;
+}
+.toggle-inner {
+  width:22px;
+  height:22px;
+  background:white;
+  border-radius:50%;
+  margin:3px;
+  transition:0.3s;
+  box-shadow:0 2px 6px rgba(0,0,0,0.3);
+}
+.dark .toggle-inner {
+  transform:translateX(24px);
+  background:#d0d0d0;
+}
 
-  .card {
-    background: rgba(255,255,255,0.06);
-    padding: 25px;
-    border-radius: 18px;
-    margin-top: 25px;
-    border: 1px solid rgba(255,255,255,0.12);
-    backdrop-filter: blur(12px);
-    box-shadow: 0 0 20px rgba(0,255,255,0.1);
-  }
+/* HERO SECTION – APPLE PRODUCT PAGE STYLE */
+.hero {
+  text-align:center;
+  padding:80px 20px 60px;
+}
+.hero h1 {
+  font-size:62px;
+  font-weight:700;
+  background:var(--hero-text);
+  -webkit-background-clip:text;
+  -webkit-text-fill-color:transparent;
+}
+.hero p {
+  font-size:20px;
+  opacity:0.65;
+  margin-top:-10px;
+}
 
-  .endpoint {
-    padding: 14px;
-    border-left: 4px solid #7afcff;
-    background: rgba(255,255,255,0.05);
-    border-radius: 8px;
-    margin-top: 12px;
-  }
+/* TABS */
+.tabs {
+  display:flex;
+  justify-content:center;
+  margin-top:40px;
+  flex-wrap:wrap;
+}
+.tab {
+  padding:14px 24px;
+  margin:8px;
+  border-radius:18px;
+  background:var(--card-bg);
+  border:1px solid var(--border);
+  backdrop-filter:blur(12px);
+  cursor:pointer;
+  font-weight:500;
+  transition:0.25s;
+}
+.tab.active {
+  background:#007aff;
+  color:#fff;
+}
 
-  code {
-    display: block;
-    background: #0e0f18;
-    padding: 12px;
-    border-radius: 10px;
-    margin-top: 8px;
-    color: #7afcff;
-    overflow-x: auto;
-  }
+/* PANELS */
+.panel {
+  display:none;
+  background:var(--card-bg);
+  padding:30px;
+  border-radius:20px;
+  margin:30px auto;
+  max-width:1100px;
+  border:1px solid var(--border);
+  box-shadow:0 8px 40px var(--shadow);
+}
+.panel.active {
+  display:block;
+}
 
-  input, select {
-    width: 100%;
-    padding: 12px;
-    margin-top: 8px;
-    border-radius: 10px;
-    border: none;
-    background: rgba(255,255,255,0.12);
-    color: #fff;
-  }
+/* INPUTS */
+label {
+  font-size:14px;
+  opacity:0.75;
+  margin-top:14px;
+}
+input {
+  width:100%;
+  padding:12px;
+  border-radius:14px;
+  border:1px solid var(--border);
+  margin-top:6px;
+  font-size:15px;
+  background:rgba(255,255,255,0.4);
+}
 
-  button {
-    margin-top: 15px;
-    width: 100%;
-    padding: 12px;
-    font-size: 16px;
-    border-radius: 10px;
-    border: none;
-    cursor: pointer;
-    background: linear-gradient(90deg, #7afcff, #fe7eff);
-    color: #111;
-    font-weight: bold;
-  }
+/* BUTTON */
+button {
+  width:100%;
+  padding:14px;
+  border:none;
+  border-radius:14px;
+  background:#007aff;
+  color:#fff;
+  margin-top:20px;
+  font-size:16px;
+  font-weight:500;
+  cursor:pointer;
+}
+button:hover { background:#0062cc; }
 
-  #playgroundResult {
-    margin-top: 20px;
-    padding: 15px;
-    border-radius: 10px;
-    background: rgba(0,0,0,0.4);
-    white-space: pre-wrap;
-    color: #7afcff;
-  }
+/* CODE + COPY BUTTON */
+pre {
+  background:#1d1d1f;
+  color:#fff;
+  border-radius:14px;
+  padding:15px;
+  margin-top:20px;
+  font-size:14px;
+  position:relative;
+}
+.copy-btn {
+  position:absolute;
+  top:10px;
+  right:10px;
+  background:#444;
+  color:white;
+  padding:6px 10px;
+  font-size:12px;
+  border-radius:8px;
+  cursor:pointer;
+  opacity:0.8;
+}
+.copy-btn:hover { opacity:1; }
 
-  footer {
-    text-align: center;
-    margin-top: 40px;
-    opacity: 0.6;
-  }
+/* MOBILE */
+@media (max-width:600px){
+  .hero h1 { font-size:48px; }
+}
 </style>
-</head>
 
+</head>
 <body>
 
-<div class="container">
-
-<h1>M2H Steam Search API</h1>
-<p class="center">A fast, modern, AI-enhanced Steam account search API with documentation & playground.</p>
-
-<!-- Documentation Section -->
-<div class="card">
-  <h2>🔌 API Endpoints</h2>
-
-  <div class="endpoint">
-    <b>GET /api/search</b>
-    <p>Search Steam accounts using powerful filters.</p>
-    <code>/api/search?username=mpqdv</code>
-    <code>/api/search?game=Rust,Metro</code>
-    <code>/api/search?country=PH&min_games=3</code>
-    <code>/api/search?random=true</code>
+<div class="nav">
+  M2H Steam API – Developer Portal
+  <div class="toggle-outer" onclick="toggleTheme()">
+    <div class="toggle-inner"></div>
   </div>
-
-  <div class="endpoint">
-    <b>GET /api/stats</b>
-    <p>Returns total accounts, total game count, country stats.</p>
-    <code>/api/stats</code>
-  </div>
-
-  <div class="endpoint">
-    <b>GET /api/ui</b>
-    <p>Full UI search interface.</p>
-    <code>/api/ui</code>
-  </div>
-
-  <h2>📘 Full Parameter List</h2>
-  <ul>
-    <li><b>username</b> - search by partial match</li>
-    <li><b>game</b> - supports list + fuzzy search</li>
-    <li><b>country</b> - filter by country code</li>
-    <li><b>status</b> - Verified / Unverified</li>
-    <li><b>min_games</b>, <b>max_games</b> - range</li>
-    <li><b>min_days</b>, <b>max_days</b> - last online</li>
-    <li><b>min_balance</b>, <b>max_balance</b> - currency filter</li>
-    <li><b>random=true</b> - returns a random account</li>
-  </ul>
 </div>
 
-<!-- Code Examples -->
-<div class="card">
-  <h2>💻 Code Examples</h2>
-
-  <h3>JavaScript (fetch)</h3>
-  <code>fetch("/api/search?game=Rust")
-  .then(r => r.json())
-  .then(console.log);</code>
-
-  <h3>cURL</h3>
-  <code>curl "https://YOUR-DOMAIN/api/search?username=mpqdv"</code>
+<div class="hero">
+  <h1>Build Smarter with Steam API</h1>
+  <p>Modern macOS-style developer portal, SDK search, item search & live playground.</p>
 </div>
 
-<!-- Playground -->
-<div class="card">
-  <h2>🧪 Live API Playground</h2>
-
-  <label>Choose Endpoint</label>
-  <select id="endpoint">
-    <option value="search">/api/search</option>
-    <option value="stats">/api/stats</option>
-  </select>
-
-  <label>Query Parameters</label>
-  <input id="params" placeholder="username=mpqdv&game=Rust">
-
-  <button onclick="runPlayground()">Run</button>
-
-  <pre id="playgroundResult">Result will appear here...</pre>
+<div class="tabs">
+  <div class="tab active" onclick="openTab('search')">Search API</div>
+  <div class="tab" onclick="openTab('stats')">Stats API</div>
+  <div class="tab" onclick="openTab('sdk')">SDK Search</div>
+  <div class="tab" onclick="openTab('item')">Item Search</div>
+  <div class="tab" onclick="openTab('ui')">UI Preview</div>
 </div>
 
-<footer>© 2025 M2H • Built on Vercel</footer>
+<!-- PANELS (Search, Stats, SDK, Items, UI) -->
+<div id="panel-search" class="panel active">
+  <h2>🔍 Steam Account Search API</h2>
 
+  <label>Username</label>
+  <input id="s_username">
+
+  <label>Game</label>
+  <input id="s_game">
+
+  <label>Country</label>
+  <input id="s_country">
+
+  <button onclick="runSearchAPI()">Run Search</button>
+
+  <pre id="searchResult"><span class="copy-btn" onclick="copy('searchResult')">Copy</span>Results...</pre>
+</div>
+
+<div id="panel-stats" class="panel">
+  <h2>📊 Stats API</h2>
+  <button onclick="runStatsAPI()">Get Stats</button>
+  <pre id="statsResult"><span class="copy-btn" onclick="copy('statsResult')">Copy</span></pre>
+</div>
+
+<div id="panel-sdk" class="panel">
+  <h2>🧩 SDK Property Search</h2>
+
+  <label>SDK Property Name</label>
+  <input id="sdk_name">
+
+  <label>Type</label>
+  <input id="sdk_type">
+
+  <button onclick="runSDK()">Search SDK</button>
+
+  <pre id="sdkResult"><span class="copy-btn" onclick="copy('sdkResult')">Copy</span></pre>
+</div>
+
+<div id="panel-item" class="panel">
+  <h2>🎒 Item Search</h2>
+
+  <label>Item Name</label>
+  <input id="item_name">
+
+  <button onclick="runItem()">Search Item</button>
+
+  <pre id="itemResult"><span class="copy-btn" onclick="copy('itemResult')">Copy</span></pre>
+</div>
+
+<div id="panel-ui" class="panel">
+  <h2>🖥 UI Preview Page</h2>
+  <a href="/api/ui"><button>Open UI</button></a>
 </div>
 
 <script>
-async function runPlayground() {
-  const ep = document.getElementById("endpoint").value;
-  const params = document.getElementById("params").value.trim();
+function openTab(id){
+  document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+  document.getElementById('panel-' + id).classList.add('active');
+  event.target.classList.add('active');
+}
 
-  const url = params ? \`/api/\${ep}?\${params}\` : \`/api/\${ep}\`;
+function toggleTheme(){
+  document.body.classList.toggle('dark');
+}
 
-  try {
-    const res = await fetch(url);
-    const data = await res.json();
-    document.getElementById("playgroundResult").textContent = JSON.stringify(data, null, 2);
-  } catch (err) {
-    document.getElementById("playgroundResult").textContent = "Error: " + err;
-  }
+function copy(id){
+  navigator.clipboard.writeText(document.getElementById(id).innerText);
+  alert("Copied!");
+}
+
+/* PLAYGROUND FUNCTIONS -------------------------- */
+
+async function runSearchAPI(){
+  let url = "/api/search?username=" + encodeURIComponent(s_username.value) +
+            "&game=" + encodeURIComponent(s_game.value) +
+            "&country=" + encodeURIComponent(s_country.value);
+
+  const r = await fetch(url);
+  searchResult.innerText = JSON.stringify(await r.json(), null, 2);
+}
+
+async function runStatsAPI(){
+  const r = await fetch("/api/stats");
+  statsResult.innerText = JSON.stringify(await r.json(), null, 2);
+}
+
+async function runSDK(){
+  let url = "/api/search?sdk=" + encodeURIComponent(sdk_name.value) +
+            "&sdk_type=" + encodeURIComponent(sdk_type.value);
+
+  const r = await fetch(url);
+  sdkResult.innerText = JSON.stringify(await r.json(), null, 2);
+}
+
+async function runItem(){
+  let url = "/api/search?item=" + encodeURIComponent(item_name.value);
+
+  const r = await fetch(url);
+  itemResult.innerText = JSON.stringify(await r.json(), null, 2);
 }
 </script>
 
 </body>
 </html>
-  `);
+`);
 };
