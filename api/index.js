@@ -24,9 +24,12 @@ body {
   color:var(--text);
   font-family:-apple-system,BlinkMacSystemFont,"Inter",sans-serif;
   display:flex;
+  flex-direction:row;
 }
 
-/* Sidebar */
+/* -------------------------------
+   SIDEBAR
+--------------------------------*/
 #sidebar {
   width:260px;
   height:100vh;
@@ -38,7 +41,9 @@ body {
   backdrop-filter:blur(22px);
   border-right:1px solid var(--border);
   padding:25px 18px;
+  transition:transform .3s ease;
 }
+
 #sidebar a {
   display:block;
   padding:10px;
@@ -48,23 +53,28 @@ body {
   color:var(--text);
   font-size:15px;
 }
+
 #sidebar a.active {
   background:#007aff;
   color:white;
 }
 
-/* Main */
+/* -------------------------------
+   MAIN CONTENT
+--------------------------------*/
 .main {
   margin-left:260px;
   padding:40px;
   width:100%;
+  max-width:1200px;
 }
 
-/* Hero */
+/* HERO */
 .hero {
   text-align:center;
-  margin-bottom:50px;
+  margin-bottom:40px;
 }
+
 .hero h1 {
   font-size:52px;
   font-weight:700;
@@ -72,12 +82,13 @@ body {
   -webkit-background-clip:text;
   -webkit-text-fill-color:transparent;
 }
+
 .hero p {
   opacity:.7;
   font-size:20px;
 }
 
-/* Cards */
+/* CARDS */
 .card {
   background:var(--card);
   backdrop-filter:blur(20px);
@@ -86,9 +97,10 @@ body {
   padding:20px;
   margin:25px auto;
   max-width:850px;
+  width:100%;
 }
 
-/* Inputs */
+/* INPUT */
 input {
   width:100%;
   padding:12px;
@@ -98,7 +110,7 @@ input {
   font-size:15px;
 }
 
-/* Button */
+/* BUTTON */
 button {
   padding:12px;
   width:100%;
@@ -109,9 +121,12 @@ button {
   font-size:16px;
   cursor:pointer;
 }
-button:hover { opacity:.9; }
 
-/* Output */
+button:hover {
+  opacity:.9;
+}
+
+/* PRE JSON OUTPUT */
 pre {
   background:#1d1d1f;
   color:#fff;
@@ -121,8 +136,71 @@ pre {
   max-height:280px;
   font-size:14px;
   margin-top:15px;
+  white-space:pre-wrap;
+}
+
+/* -------------------------------
+      RESPONSIVE BREAKPOINTS
+--------------------------------*/
+
+/* Tablets & smaller laptops */
+@media (max-width: 1200px) {
+  .main {
+    padding:30px;
+    margin-left:240px;
+  }
+  .hero h1 { font-size:48px; }
+}
+
+/* Tablets 900px */
+@media (max-width: 900px) {
+  #sidebar {
+    display:none;
+  }
+  .main {
+    margin-left:0;
+    padding:28px;
+  }
+  .hero h1 { font-size:42px; }
+  .hero p { font-size:18px; }
+  .card { padding:18px; }
+}
+
+/* Large mobile 600px */
+@media (max-width: 600px) {
+  body {
+    flex-direction:column;
+  }
+  .main {
+    padding:22px;
+  }
+  .hero h1 { font-size:36px; }
+  .hero p { font-size:16px; }
+  button { font-size:15px; }
+  input { font-size:14px; }
+}
+
+/* Small mobile 420px */
+@media (max-width: 420px) {
+  .main {
+    padding:18px;
+  }
+  .hero h1 { font-size:30px; }
+  .hero p { font-size:14px; }
+  .card { padding:15px; }
+  button { padding:10px; }
+  pre { font-size:13px; }
+}
+
+/* Ultra-small 320px */
+@media (max-width: 340px) {
+  .hero h1 { font-size:26px; }
+  .hero p { font-size:13px; }
+  input, button { font-size:13px; }
+  pre { font-size:12px; }
 }
 </style>
+
 </head>
 
 <body>
