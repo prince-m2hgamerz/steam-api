@@ -6,29 +6,16 @@ export default function handler(req, res) {
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>M2H Developer Portal – Steam API</title>
+<title>M2H Steam API – Developer Portal</title>
 <meta name="viewport" content="width=device-width, initial-scale=1">
 
-<!-- =============================
-  GLOBAL STYLES
-============================== -->
 <style>
 :root {
   --bg:#f5f5f7;
   --text:#1d1d1f;
-  --card:rgba(255,255,255,0.5);
-  --border:rgba(0,0,0,0.15);
-  --shadow:rgba(0,0,0,0.1);
-  --hero:linear-gradient(120deg,#007aff,#ff2d55);
-}
-
-.dark {
-  --bg:#0d0d0f;
-  --text:#fafafa;
-  --card:rgba(20,20,25,0.55);
-  --border:rgba(255,255,255,0.15);
-  --shadow:rgba(0,0,0,0.5);
-  --hero:linear-gradient(120deg,#0a84ff,#ff375f);
+  --card:rgba(255,255,255,.55);
+  --border:rgba(0,0,0,.15);
+  --shadow:rgba(0,0,0,.1);
 }
 
 body {
@@ -39,8 +26,8 @@ body {
   display:flex;
 }
 
-/* SIDEBAR (Apple Developer Docs Style) */
-.sidebar {
+/* Sidebar */
+#sidebar {
   width:260px;
   height:100vh;
   position:fixed;
@@ -48,215 +35,229 @@ body {
   top:0;
   overflow-y:auto;
   background:var(--card);
-  backdrop-filter:blur(20px);
+  backdrop-filter:blur(22px);
   border-right:1px solid var(--border);
-  padding:20px;
+  padding:25px 18px;
 }
-.sidebar h2 {
-  font-size:20px;
-  margin-bottom:10px;
-  opacity:0.8;
-}
-.sidebar a {
+#sidebar a {
   display:block;
-  padding:10px 8px;
-  border-radius:8px;
+  padding:10px;
+  margin-bottom:4px;
+  border-radius:10px;
   text-decoration:none;
   color:var(--text);
   font-size:15px;
-  margin-bottom:4px;
 }
-.sidebar a.active {
+#sidebar a.active {
   background:#007aff;
   color:white;
 }
 
-/* MAIN CONTENT */
+/* Main */
 .main {
   margin-left:260px;
-  padding:30px;
+  padding:40px;
   width:100%;
 }
 
-/* HERO */
+/* Hero */
 .hero {
   text-align:center;
-  margin-bottom:60px;
+  margin-bottom:50px;
 }
 .hero h1 {
-  font-size:58px;
+  font-size:52px;
   font-weight:700;
-  background:var(--hero);
+  background:linear-gradient(120deg,#007aff,#ff2d55);
   -webkit-background-clip:text;
   -webkit-text-fill-color:transparent;
 }
 .hero p {
+  opacity:.7;
   font-size:20px;
-  opacity:0.7;
 }
 
-/* CARDS */
+/* Cards */
 .card {
-  max-width:900px;
-  margin:25px auto;
-  padding:25px;
-  border-radius:20px;
   background:var(--card);
   backdrop-filter:blur(20px);
   border:1px solid var(--border);
+  border-radius:18px;
+  padding:20px;
+  margin:25px auto;
+  max-width:850px;
 }
 
-/* INPUTS */
+/* Inputs */
 input {
   width:100%;
   padding:12px;
   border-radius:12px;
-  margin-top:5px;
   border:1px solid var(--border);
+  margin:6px 0 14px;
+  font-size:15px;
 }
 
-/* BUTTON */
+/* Button */
 button {
-  padding:14px;
+  padding:12px;
   width:100%;
-  margin-top:15px;
-  background:#007aff;
-  color:white;
-  border:none;
   border-radius:12px;
+  border:none;
+  background:#007aff;
+  color:#fff;
   font-size:16px;
+  cursor:pointer;
 }
+button:hover { opacity:.9; }
 
-/* PREVIEW */
+/* Output */
 pre {
   background:#1d1d1f;
-  padding:16px;
+  color:#fff;
+  padding:14px;
   border-radius:12px;
-  color:white;
-  max-height:240px;
   overflow:auto;
+  max-height:280px;
   font-size:14px;
+  margin-top:15px;
 }
 </style>
 </head>
 
 <body>
 
-<div class="sidebar" id="sidebar"></div>
+<div id="sidebar"></div>
 
 <div class="main">
-
   <div class="hero">
-    <h1>Steam API Suite</h1>
-    <p>Apple Developer Docs–style API portal with modular UI & zero lag response rendering.</p>
+    <h1>Steam API Developer Portal</h1>
+    <p>Apple Developer–style interactive playground for your Accounts, Items & SDK APIs.</p>
   </div>
 
-  <!-- CONTENT SECTIONS -->
+  <!-- ACCOUNTS -->
   <section id="accounts">
     <h2>🔍 Accounts API</h2>
     <div class="card">
       <label>Username</label>
       <input id="acc_username">
+
       <label>Country</label>
       <input id="acc_country">
+
       <label>Game</label>
       <input id="acc_game">
-      <button onclick="runAccounts()">Run Request</button>
-      <pre id="accOut">Ready...</pre>
+
+      <button onclick="runAccounts()">Run</button>
+      <pre id="accOut">Waiting...</pre>
     </div>
   </section>
 
+  <!-- ITEMS -->
   <section id="items">
     <h2>🎒 Items API</h2>
     <div class="card">
       <label>Item Name</label>
       <input id="item_name">
+
       <label>Item ID</label>
       <input id="item_id">
-      <button onclick="runItems()">Run Request</button>
-      <pre id="itemOut">Ready...</pre>
+
+      <button onclick="runItems()">Run</button>
+      <pre id="itemOut">Waiting...</pre>
     </div>
   </section>
 
+  <!-- SDK -->
   <section id="sdk">
     <h2>🧩 SDK API</h2>
     <div class="card">
       <label>Name</label>
       <input id="sdk_name">
+
       <label>Type</label>
       <input id="sdk_type">
+
       <label>Offset</label>
       <input id="sdk_offset">
+
       <label>Size</label>
       <input id="sdk_size">
-      <button onclick="runSDK()">Run Request</button>
-      <pre id="sdkOut">Ready...</pre>
+
+      <button onclick="runSDK()">Run</button>
+      <pre id="sdkOut">Waiting...</pre>
     </div>
   </section>
 
+  <!-- AUTH -->
   <section id="auth">
-    <h2>🔐 API Authentication</h2>
+    <h2>🔐 Authentication</h2>
     <div class="card">
-      <p>Your API key is optional. If provided, responses include <code>"authenticated": true</code></p>
-      <button onclick="generateKey()">Generate New API Key</button>
-      <pre id="keyOut">No key generated.</pre>
+      <p>API Key is optional (Mode C). If used, responses show <code>"authenticated": true</code>.</p>
+      <button onclick="generateKey()">Generate API Key</button>
+      <pre id="keyOut">No key yet.</pre>
     </div>
   </section>
-
 </div>
 
-<!-- =============================
-   LOAD JS MODULES
-============================== -->
-<script src="/api/sidebar.js"></script>
-<script src="/api/syntax.js"></script>
-<script src="/api/drawer.js"></script>
+<!-- Load Combined UI Scripts -->
+<script src="/api/ui?module=sidebar"></script>
+<script src="/api/ui?module=drawer"></script>
+<script src="/api/ui?module=syntax"></script>
 
-<!-- Web Worker -->
+<!-- Worker -->
 <script>
-const worker = new Worker("/api/ui-worker.js");
+const worker = new Worker("/api/ui?module=worker");
 
-function render(target, json){
+function streamRender(target, json) {
+  document.getElementById(target).innerHTML = "";
   worker.postMessage({ target, json });
 }
 
-worker.onmessage = (e)=>{
-  const { target, chunk, done } = e.data;
-  const el = document.getElementById(target);
-  if (!done) el.innerText += chunk;
-  else el.innerText = e.data.full;
+worker.onmessage = e => {
+  const { target, chunk, full, done } = e.data;
+  const box = document.getElementById(target);
+
+  if (!done) box.innerText += chunk;
+  else box.innerText = full;
 };
 </script>
 
-<!-- PLAYGROUND FUNCTIONS -->
+<!-- Playground Functions -->
 <script>
-async function runAccounts(){
-  document.getElementById("accOut").innerText = "";
+async function runAccounts() {
+  streamRender("accOut", { loading: true });
+
   const res = await fetch(
     \`/api/accounts?username=\${acc_username.value}&country=\${acc_country.value}&game=\${acc_game.value}\`
-  ).then(r=>r.json());
-  render("accOut", res);
+  ).then(r => r.json());
+
+  streamRender("accOut", res);
 }
 
-async function runItems(){
-  document.getElementById("itemOut").innerText = "";
+async function runItems() {
+  streamRender("itemOut", { loading: true });
+
   const res = await fetch(
     \`/api/items?name=\${item_name.value}&id=\${item_id.value}\`
-  ).then(r=>r.json());
-  render("itemOut", res);
+  ).then(r => r.json());
+
+  streamRender("itemOut", res);
 }
 
-async function runSDK(){
-  document.getElementById("sdkOut").innerText = "";
+async function runSDK() {
+  streamRender("sdkOut", { loading: true });
+
   const res = await fetch(
     \`/api/sdk?name=\${sdk_name.value}&type=\${sdk_type.value}&offset=\${sdk_offset.value}&size=\${sdk_size.value}\`
-  ).then(r=>r.json());
-  render("sdkOut", res);
+  ).then(r => r.json());
+
+  streamRender("sdkOut", res);
 }
 
-async function generateKey(){
-  const res = await fetch("/api/generate-key").then(r=>r.json());
-  document.getElementById("keyOut").innerText = res.key;
+async function generateKey() {
+  const res = await fetch("/api/generate-key").then(r => r.json());
+  streamRender("keyOut", res);
 }
 </script>
 
