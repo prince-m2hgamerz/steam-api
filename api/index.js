@@ -13,45 +13,83 @@ export default function handler(req, res) {
 :root {
   --bg:#f5f5f7;
   --text:#1d1d1f;
-  --card:rgba(255,255,255,.55);
+  --glass:rgba(255,255,255,.55);
+  --glass-dark:rgba(30,30,35,.35);
   --border:rgba(0,0,0,.15);
-  --shadow:rgba(0,0,0,.1);
 }
 
+/* -------------------------------
+     BODY LAYOUT
+--------------------------------*/
 body {
   margin:0;
-  background:var(--bg);
-  color:var(--text);
   font-family:-apple-system,BlinkMacSystemFont,"Inter",sans-serif;
+  background:var(--bg);
   display:flex;
   flex-direction:row;
 }
 
 /* -------------------------------
-   SIDEBAR
+     HEADER (VisionOS style)
+--------------------------------*/
+#topBar {
+  width:100%;
+  height:60px;
+  position:fixed;
+  top:0;
+  left:0;
+  background:var(--glass);
+  backdrop-filter:blur(22px);
+  border-bottom:1px solid var(--border);
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  padding:0 22px;
+  z-index:2000;
+}
+
+#topBar .title {
+  font-size:20px;
+  font-weight:600;
+  color:var(--text);
+}
+
+#menuBtn {
+  display:none;
+  padding:10px 14px;
+  font-size:20px;
+  background:var(--glass-dark);
+  border:none;
+  border-radius:12px;
+  color:white;
+}
+
+/* -------------------------------
+     SIDEBAR (Floating Vision UI)
 --------------------------------*/
 #sidebar {
-  width:260px;
-  height:100vh;
   position:fixed;
   left:0;
-  top:0;
-  overflow-y:auto;
-  background:var(--card);
-  backdrop-filter:blur(22px);
+  top:60px;
+  width:260px;
+  height:calc(100vh - 60px);
+  background:var(--glass);
   border-right:1px solid var(--border);
+  backdrop-filter:blur(25px);
   padding:25px 18px;
-  transition:transform .3s ease;
+  overflow-y:auto;
+  transition:left .35s ease;
+  z-index:1500;
 }
 
 #sidebar a {
   display:block;
   padding:10px;
-  margin-bottom:4px;
-  border-radius:10px;
+  margin-bottom:6px;
+  border-radius:12px;
   text-decoration:none;
-  color:var(--text);
   font-size:15px;
+  color:var(--text);
 }
 
 #sidebar a.active {
@@ -60,150 +98,67 @@ body {
 }
 
 /* -------------------------------
-   MAIN CONTENT
+     MAIN CONTENT
 --------------------------------*/
 .main {
   margin-left:260px;
+  margin-top:60px;
   padding:40px;
   width:100%;
   max-width:1200px;
 }
 
 /* HERO */
-.hero {
-  text-align:center;
-  margin-bottom:40px;
-}
-
 .hero h1 {
-  font-size:52px;
+  font-size:48px;
   font-weight:700;
+  text-align:center;
   background:linear-gradient(120deg,#007aff,#ff2d55);
   -webkit-background-clip:text;
   -webkit-text-fill-color:transparent;
 }
 
 .hero p {
+  text-align:center;
   opacity:.7;
-  font-size:20px;
+  font-size:18px;
 }
 
 /* CARDS */
 .card {
-  background:var(--card);
-  backdrop-filter:blur(20px);
-  border:1px solid var(--border);
+  background:var(--glass);
   border-radius:18px;
+  border:1px solid var(--border);
+  backdrop-filter:blur(22px);
   padding:20px;
   margin:25px auto;
   max-width:850px;
-  width:100%;
 }
 
-/* INPUT */
-input {
-  width:100%;
-  padding:12px;
-  border-radius:12px;
-  border:1px solid var(--border);
-  margin:6px 0 14px;
-  font-size:15px;
-}
-
-/* BUTTON */
-button {
-  padding:12px;
-  width:100%;
-  border-radius:12px;
-  border:none;
-  background:#007aff;
-  color:#fff;
-  font-size:16px;
-  cursor:pointer;
-}
-
-button:hover {
-  opacity:.9;
-}
-
-/* PRE JSON OUTPUT */
-pre {
-  background:#1d1d1f;
-  color:#fff;
-  padding:14px;
-  border-radius:12px;
-  overflow:auto;
-  max-height:280px;
-  font-size:14px;
-  margin-top:15px;
-  white-space:pre-wrap;
-}
-
-/* -------------------------------
-      RESPONSIVE BREAKPOINTS
---------------------------------*/
-
-/* Tablets & smaller laptops */
-@media (max-width: 1200px) {
-  .main {
-    padding:30px;
-    margin-left:240px;
-  }
-  .hero h1 { font-size:48px; }
-}
-
-/* Tablets 900px */
-@media (max-width: 900px) {
+/* RESPONSIVENESS */
+@media(max-width:900px) {
   #sidebar {
-    display:none;
+    left:-260px;
+  }
+  #menuBtn {
+    display:block;
   }
   .main {
     margin-left:0;
     padding:28px;
   }
-  .hero h1 { font-size:42px; }
-  .hero p { font-size:18px; }
-  .card { padding:18px; }
-}
-
-/* Large mobile 600px */
-@media (max-width: 600px) {
-  body {
-    flex-direction:column;
-  }
-  .main {
-    padding:22px;
-  }
-  .hero h1 { font-size:36px; }
-  .hero p { font-size:16px; }
-  button { font-size:15px; }
-  input { font-size:14px; }
-}
-
-/* Small mobile 420px */
-@media (max-width: 420px) {
-  .main {
-    padding:18px;
-  }
-  .hero h1 { font-size:30px; }
-  .hero p { font-size:14px; }
-  .card { padding:15px; }
-  button { padding:10px; }
-  pre { font-size:13px; }
-}
-
-/* Ultra-small 320px */
-@media (max-width: 340px) {
-  .hero h1 { font-size:26px; }
-  .hero p { font-size:13px; }
-  input, button { font-size:13px; }
-  pre { font-size:12px; }
 }
 </style>
+
 
 </head>
 
 <body>
+
+<header id="topBar">
+  <div class="title">M2H Steam API</div>
+  <button id="menuBtn" onclick="toggleSidebar()">☰</button>
+</header>
 
 <div id="sidebar"></div>
 
@@ -336,6 +291,12 @@ async function runSDK() {
 async function generateKey() {
   const res = await fetch("/api/generate-key").then(r => r.json());
   streamRender("keyOut", res);
+}
+</script>
+<script>
+function toggleSidebar() {
+  const sb = document.getElementById("sidebar");
+  sb.style.left = (sb.style.left === "0px") ? "-260px" : "0px";
 }
 </script>
 
