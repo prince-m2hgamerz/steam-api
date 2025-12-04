@@ -9,15 +9,15 @@ export default function handler(req, res) {
 <title>M2H Developer Portal – Steam API</title>
 <meta name="viewport" content="width=device-width, initial-scale=1">
 
+<!-- =============================
+  GLOBAL STYLES
+============================== -->
 <style>
-/* ===========================================================
-   APPLE SONOMA DESIGN + GLASS UI + PERFORMANCE OPTIMIZED
-=========================================================== */
 :root {
   --bg:#f5f5f7;
   --text:#1d1d1f;
-  --card:rgba(255,255,255,0.55);
-  --border:rgba(0,0,0,0.12);
+  --card:rgba(255,255,255,0.5);
+  --border:rgba(0,0,0,0.15);
   --shadow:rgba(0,0,0,0.1);
   --hero:linear-gradient(120deg,#007aff,#ff2d55);
 }
@@ -25,9 +25,9 @@ export default function handler(req, res) {
 .dark {
   --bg:#0d0d0f;
   --text:#fafafa;
-  --card:rgba(25,25,30,0.55);
-  --border:rgba(255,255,255,0.2);
-  --shadow:rgba(0,0,0,0.6);
+  --card:rgba(20,20,25,0.55);
+  --border:rgba(255,255,255,0.15);
+  --shadow:rgba(0,0,0,0.5);
   --hero:linear-gradient(120deg,#0a84ff,#ff375f);
 }
 
@@ -36,275 +36,227 @@ body {
   background:var(--bg);
   color:var(--text);
   font-family:-apple-system,BlinkMacSystemFont,"Inter",sans-serif;
-  transition:background 0.4s;
+  display:flex;
 }
 
-/* NAVIGATION */
-.navbar {
-  padding:18px;
-  font-size:20px;
-  font-weight:600;
-  text-align:center;
+/* SIDEBAR (Apple Developer Docs Style) */
+.sidebar {
+  width:260px;
+  height:100vh;
+  position:fixed;
+  left:0;
+  top:0;
+  overflow-y:auto;
   background:var(--card);
   backdrop-filter:blur(20px);
-  border-bottom:1px solid var(--border);
-  position:sticky;
-  top:0;
-  z-index:50;
+  border-right:1px solid var(--border);
+  padding:20px;
+}
+.sidebar h2 {
+  font-size:20px;
+  margin-bottom:10px;
+  opacity:0.8;
+}
+.sidebar a {
+  display:block;
+  padding:10px 8px;
+  border-radius:8px;
+  text-decoration:none;
+  color:var(--text);
+  font-size:15px;
+  margin-bottom:4px;
+}
+.sidebar a.active {
+  background:#007aff;
+  color:white;
 }
 
-.toggle {
-  width:52px;
-  height:28px;
-  border-radius:20px;
-  border:1px solid var(--border);
-  background:rgba(255,255,255,0.4);
-  backdrop-filter:blur(10px);
-  position:absolute;
-  top:14px;
-  right:16px;
-  cursor:pointer;
+/* MAIN CONTENT */
+.main {
+  margin-left:260px;
+  padding:30px;
+  width:100%;
 }
-.toggle-btn {
-  width:22px;
-  height:22px;
-  background:white;
-  border-radius:50%;
-  margin:3px;
-  transition:0.3s;
-}
-.dark .toggle-btn { transform:translateX(24px); }
 
-/* HERO SECTION */
+/* HERO */
 .hero {
   text-align:center;
-  padding:90px 20px;
+  margin-bottom:60px;
 }
 .hero h1 {
-  font-size:64px;
+  font-size:58px;
   font-weight:700;
   background:var(--hero);
   -webkit-background-clip:text;
   -webkit-text-fill-color:transparent;
 }
 .hero p {
-  font-size:22px;
+  font-size:20px;
   opacity:0.7;
-  margin-top:-10px;
-  animation:fadeIn 1.2s ease;
-}
-
-@keyframes fadeIn {
-  from{opacity:0;transform:translateY(10px);}
-  to{opacity:1;transform:translateY(0);}
-}
-
-/* SECTION TITLES */
-.section-title {
-  font-size:34px;
-  text-align:center;
-  margin-top:50px;
-  margin-bottom:20px;
-  font-weight:600;
 }
 
 /* CARDS */
 .card {
-  max-width:1100px;
-  padding:30px;
+  max-width:900px;
   margin:25px auto;
-  background:var(--card);
-  border:1px solid var(--border);
+  padding:25px;
   border-radius:20px;
-  backdrop-filter:blur(18px);
-  box-shadow:0 8px 40px var(--shadow);
+  background:var(--card);
+  backdrop-filter:blur(20px);
+  border:1px solid var(--border);
 }
 
 /* INPUTS */
 input {
   width:100%;
   padding:12px;
-  margin-top:8px;
-  border-radius:14px;
+  border-radius:12px;
+  margin-top:5px;
   border:1px solid var(--border);
 }
 
-/* BUTTONS */
+/* BUTTON */
 button {
   padding:14px;
   width:100%;
+  margin-top:15px;
   background:#007aff;
   color:white;
   border:none;
-  border-radius:14px;
-  margin-top:20px;
+  border-radius:12px;
   font-size:16px;
 }
-button:hover { background:#0060d1; }
 
-/* LOADING SPINNER */
-.loader {
-  width:26px;
-  height:26px;
-  border:3px solid rgba(255,255,255,0.3);
-  border-top-color:#fff;
-  border-radius:50%;
-  animation:spin 0.7s linear infinite;
-  margin:auto;
-  display:none;
-}
-@keyframes spin { to{transform:rotate(360deg);} }
-
-/* PRE (Virtualized Output) */
+/* PREVIEW */
 pre {
   background:#1d1d1f;
   padding:16px;
-  border-radius:14px;
+  border-radius:12px;
   color:white;
-  max-height:260px;
+  max-height:240px;
   overflow:auto;
+  font-size:14px;
 }
 </style>
 </head>
 
 <body>
 
-<div class="navbar">
-  M2H Developer Portal
-  <div class="toggle" onclick="toggleTheme()">
-    <div class="toggle-btn"></div>
+<div class="sidebar" id="sidebar"></div>
+
+<div class="main">
+
+  <div class="hero">
+    <h1>Steam API Suite</h1>
+    <p>Apple Developer Docs–style API portal with modular UI & zero lag response rendering.</p>
   </div>
+
+  <!-- CONTENT SECTIONS -->
+  <section id="accounts">
+    <h2>🔍 Accounts API</h2>
+    <div class="card">
+      <label>Username</label>
+      <input id="acc_username">
+      <label>Country</label>
+      <input id="acc_country">
+      <label>Game</label>
+      <input id="acc_game">
+      <button onclick="runAccounts()">Run Request</button>
+      <pre id="accOut">Ready...</pre>
+    </div>
+  </section>
+
+  <section id="items">
+    <h2>🎒 Items API</h2>
+    <div class="card">
+      <label>Item Name</label>
+      <input id="item_name">
+      <label>Item ID</label>
+      <input id="item_id">
+      <button onclick="runItems()">Run Request</button>
+      <pre id="itemOut">Ready...</pre>
+    </div>
+  </section>
+
+  <section id="sdk">
+    <h2>🧩 SDK API</h2>
+    <div class="card">
+      <label>Name</label>
+      <input id="sdk_name">
+      <label>Type</label>
+      <input id="sdk_type">
+      <label>Offset</label>
+      <input id="sdk_offset">
+      <label>Size</label>
+      <input id="sdk_size">
+      <button onclick="runSDK()">Run Request</button>
+      <pre id="sdkOut">Ready...</pre>
+    </div>
+  </section>
+
+  <section id="auth">
+    <h2>🔐 API Authentication</h2>
+    <div class="card">
+      <p>Your API key is optional. If provided, responses include <code>"authenticated": true</code></p>
+      <button onclick="generateKey()">Generate New API Key</button>
+      <pre id="keyOut">No key generated.</pre>
+    </div>
+  </section>
+
 </div>
 
-<div class="hero">
-  <h1>Steam API Suite</h1>
-  <p>The fastest Apple-inspired API playground with Accounts, Items, and SDK search.</p>
-</div>
+<!-- =============================
+   LOAD JS MODULES
+============================== -->
+<script src="/api/sidebar.js"></script>
+<script src="/api/syntax.js"></script>
+<script src="/api/drawer.js"></script>
 
-<!-- ================================
-     FEATURES
-================================ -->
-<h2 class="section-title">✨ Features</h2>
-<div class="card">
-  <ul>
-    <li>⚡ Ultra-fast API responses</li>
-    <li>🍏 Apple macOS Sonoma UI</li>
-    <li>🎮 Account, Item & SDK search</li>
-    <li>🧪 Live playground with async rendering</li>
-    <li>📦 Clean JSON output</li>
-    <li>🚀 Zero UI lag – virtualized rendering</li>
-    <li>📋 Copy-to-clipboard buttons</li>
-  </ul>
-</div>
-
-<!-- ================================
-     ACCOUNTS API PLAYGROUND
-================================ -->
-<h2 class="section-title">🔍 Accounts API Playground</h2>
-<div class="card">
-  <label>Username</label>
-  <input id="acc_username">
-
-  <label>Country</label>
-  <input id="acc_country">
-
-  <label>Game</label>
-  <input id="acc_game">
-
-  <button onclick="runAccounts()">Search Accounts</button>
-
-  <div class="loader" id="accLoader"></div>
-  <pre id="accOut">Awaiting input...</pre>
-</div>
-
-<!-- ================================
-     ITEMS API PLAYGROUND
-================================ -->
-<h2 class="section-title">🎒 Items API Playground</h2>
-<div class="card">
-  <label>Item Name</label>
-  <input id="item_name">
-
-  <label>Item ID</label>
-  <input id="item_id">
-
-  <button onclick="runItems()">Search Items</button>
-
-  <div class="loader" id="itemLoader"></div>
-  <pre id="itemOut">Awaiting input...</pre>
-</div>
-
-<!-- ================================
-     SDK API PLAYGROUND
-================================ -->
-<h2 class="section-title">🧩 SDK API Playground</h2>
-<div class="card">
-  <label>Name</label>
-  <input id="sdk_name">
-
-  <label>Type</label>
-  <input id="sdk_type">
-
-  <label>Offset</label>
-  <input id="sdk_offset">
-
-  <label>Size</label>
-  <input id="sdk_size">
-
-  <button onclick="runSDK()">Search SDK</button>
-
-  <div class="loader" id="sdkLoader"></div>
-  <pre id="sdkOut">Awaiting input...</pre>
-</div>
-
+<!-- Web Worker -->
 <script>
-/* THEME TOGGLE */
-function toggleTheme(){
-  document.body.classList.toggle("dark");
+const worker = new Worker("/api/ui-worker.js");
+
+function render(target, json){
+  worker.postMessage({ target, json });
 }
 
-/* VIRTUALIZED RENDERING (LAG FIX) */
-function renderJSON(target, data){
-  const element = document.getElementById(target);
-  const str = JSON.stringify(data, null, 2);
-  const chunkSize = 600;  
-  let index = 0;
+worker.onmessage = (e)=>{
+  const { target, chunk, done } = e.data;
+  const el = document.getElementById(target);
+  if (!done) el.innerText += chunk;
+  else el.innerText = e.data.full;
+};
+</script>
 
-  element.innerText = "";
-
-  function appendChunk(){
-    if(index < str.length){
-      element.innerText += str.slice(index, index + chunkSize);
-      index += chunkSize;
-      requestAnimationFrame(appendChunk);
-    }
-  }
-  requestAnimationFrame(appendChunk);
-}
-
-/* PLAYGROUND FUNCTIONS */
+<!-- PLAYGROUND FUNCTIONS -->
+<script>
 async function runAccounts(){
-  accLoader.style.display = "block";
-  const url = \`/api/accounts?username=\${acc_username.value}&country=\${acc_country.value}&game=\${acc_game.value}\`;
-  const res = await fetch(url).then(r => r.json());
-  accLoader.style.display = "none";
-  renderJSON("accOut", res);
+  document.getElementById("accOut").innerText = "";
+  const res = await fetch(
+    \`/api/accounts?username=\${acc_username.value}&country=\${acc_country.value}&game=\${acc_game.value}\`
+  ).then(r=>r.json());
+  render("accOut", res);
 }
 
 async function runItems(){
-  itemLoader.style.display = "block";
-  const url = \`/api/items?name=\${item_name.value}&id=\${item_id.value}\`;
-  const res = await fetch(url).then(r => r.json());
-  itemLoader.style.display = "none";
-  renderJSON("itemOut", res);
+  document.getElementById("itemOut").innerText = "";
+  const res = await fetch(
+    \`/api/items?name=\${item_name.value}&id=\${item_id.value}\`
+  ).then(r=>r.json());
+  render("itemOut", res);
 }
 
 async function runSDK(){
-  sdkLoader.style.display = "block";
-  const url = \`/api/sdk?name=\${sdk_name.value}&type=\${sdk_type.value}&offset=\${sdk_offset.value}&size=\${sdk_size.value}\`;
-  const res = await fetch(url).then(r => r.json());
-  sdkLoader.style.display = "none";
-  renderJSON("sdkOut", res);
+  document.getElementById("sdkOut").innerText = "";
+  const res = await fetch(
+    \`/api/sdk?name=\${sdk_name.value}&type=\${sdk_type.value}&offset=\${sdk_offset.value}&size=\${sdk_size.value}\`
+  ).then(r=>r.json());
+  render("sdkOut", res);
+}
+
+async function generateKey(){
+  const res = await fetch("/api/generate-key").then(r=>r.json());
+  document.getElementById("keyOut").innerText = res.key;
 }
 </script>
 
