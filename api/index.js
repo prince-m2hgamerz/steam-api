@@ -220,8 +220,8 @@ body {
    RESPONSIVE
 ============================================================ */
 @media(max-width:900px) {
-  #sidebar { left:-260px; }
-  #menuBtn { display:block; }
+  #sidebar { left:-300px; }
+  #menuBtn { display:block; position:fixed; left:300px z-index:2001; }
   .main { margin-left:0; padding:28px; }
 }
 @media(max-width:600px) {
