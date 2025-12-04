@@ -221,7 +221,7 @@ body {
 ============================================================ */
 @media(max-width:900px) {
   #sidebar { left:-300px; }
-  #menuBtn { display:block; position:fixed; left:300px z-index:2001; }
+  #menuBtn { display:block; }
   .main { margin-left:0; padding:28px; }
 }
 @media(max-width:600px) {
