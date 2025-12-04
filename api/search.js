@@ -1,170 +1,117 @@
-const fs = require("fs");
-const path = require("path");
+import accounts from "../data/accounts.json";
+import sdk from "../data/sdk.json";
+import items from "../data/items.json";
 
-// Utility: Load JSON from /data
-function loadJSON(fileName) {
-  const file = path.join(process.cwd(), "data", fileName);
-  return JSON.parse(fs.readFileSync(file, "utf8"));
-}
+export default function handler(req, res) {
+  try {
+    const {
+      username,
+      country,
+      item,
+      item_id,
+      sdk_query,
+      sdk_type,
+      sdk_offset,
+      sdk_size
+    } = req.query;
 
-// Utility: Convert "15 days ago" → 15
-function parseDays(str) {
-  if (!str) return null;
-  const d = str.match(/(\d+)\s*day/);
-  if (d) return Number(d[1]);
-  return null;
-}
+    // -----------------------------
+    // 1. ACCOUNT SEARCH
+    // -----------------------------
+    let accountMatches = [];
 
-// Utility: Parse balance like "¥ 0.00" → 0.00
-function parseBalance(bal) {
-  if (!bal) return null;
-  const cleaned = bal.replace(/[^0-9.,-]/g, "").replace(",", ".");
-  const num = Number(cleaned);
-  return isNaN(num) ? null : num;
-}
+    if (username || country) {
+      accountMatches = accounts.filter(acc => {
+        let ok = true;
 
-// Fuzzy search helper
-function fuzzy(a, b) {
-  a = a.toLowerCase();
-  b = b.toLowerCase();
-  return a.includes(b) || b.includes(a);
-}
+        if (username)
+          ok = ok && acc.username.toLowerCase().includes(username.toLowerCase());
 
-module.exports = (req, res) => {
-  const t0 = Date.now();
+        if (country)
+          ok = ok && acc.country.toLowerCase() === country.toLowerCase();
 
-  // Load all JSON files
-  const accounts = loadJSON("accounts.json");
-  const sdk = loadJSON("sdk.json");
-  const items = loadJSON("item.json");
+        return ok;
+      });
+    }
 
-  // Query params
-  let {
-    username,
-    game,
-    country,
-    status,
-    config_by,
-    min_games,
-    max_games,
-    min_days,
-    max_days,
-    min_balance,
-    max_balance,
-    random,
-    limit = 20,
-    page = 1,
-    
-    // NEW filters
-    sdk: sdkQuery,
-    sdk_type,
-    sdk_offset,
-    sdk_size,
+    // -----------------------------
+    // 2. ITEM SEARCH (SAFE)
+    // -----------------------------
+    let itemMatches = [];
 
-    item: itemQuery,
-    item_id
-  } = req.query;
+    try {
+      const allItems = Object.values(items);
 
-  limit = Math.min(Number(limit) || 20, 100);
-  page = Number(page) || 1;
+      itemMatches = allItems.filter(it => {
+        let ok = true;
 
-  // ---------------------------
-  // ⭐ SEARCH STEAM ACCOUNTS
-  // ---------------------------
-  let result = accounts.map(acc => ({
-    ...acc,
-    days: parseDays(acc.last_online),
-    balance_num: parseBalance(acc.balance)
-  }));
+        const name = (it.name || "").toLowerCase();
+        const desc = (it.description || "").toLowerCase();
 
-  if (username) {
-    result = result.filter(acc => fuzzy(acc.username, username));
-  }
+        if (item)
+          ok = ok && (name.includes(item.toLowerCase()) || desc.includes(item.toLowerCase()));
 
-  if (game) {
-    const list = game.toLowerCase().split(",");
-    result = result.filter(acc =>
-      acc.games.some(g => list.some(q => fuzzy(g, q)))
-    );
-  }
+        if (item_id)
+          ok = ok && String(it.id) === String(item_id);
 
-  if (country) result = result.filter(acc => acc.country.toLowerCase() === country.toLowerCase());
-  if (status) result = result.filter(acc => acc.status.toLowerCase() === status.toLowerCase());
-  if (config_by) result = result.filter(acc => acc.config_by.toLowerCase() === config_by.toLowerCase());
+        return ok;
+      });
+    } catch (err) {
+      console.error("ITEM SEARCH ERROR →", err);
+      itemMatches = [];
+    }
 
-  if (min_games) result = result.filter(acc => acc.total_games >= Number(min_games));
-  if (max_games) result = result.filter(acc => acc.total_games <= Number(max_games));
+    // -----------------------------
+    // 3. SDK SEARCH (SAFE)
+    // -----------------------------
+    let sdkMatches = [];
 
-  if (min_days) result = result.filter(acc => acc.days >= Number(min_days));
-  if (max_days) result = result.filter(acc => acc.days <= Number(max_days));
+    try {
+      const properties = sdk?.Object?.properties || [];  // Safe access
 
-  if (min_balance) result = result.filter(acc => acc.balance_num >= Number(min_balance));
-  if (max_balance) result = result.filter(acc => acc.balance_num <= Number(max_balance));
+      sdkMatches = properties.filter(prop => {
+        let ok = true;
 
-  // Random account selector
-  if (random === "true") {
-    const picked = result[Math.floor(Math.random() * result.length)];
-    return res.status(200).json({ success: true, random: picked });
-  }
+        const pName = (prop.name || "").toLowerCase();
+        const pType = (prop.type || "").toLowerCase();
 
-  // Pagination
-  const total_accounts = result.length;
-  const start = (page - 1) * limit;
-  const paginated_accounts = result.slice(start, start + limit);
+        if (sdk_query)
+          ok = ok && pName.includes(sdk_query.toLowerCase());
 
-  // ---------------------------
-  // ⭐ SEARCH SDK.JSON
-  // ---------------------------
-  let sdkMatches = [];
+        if (sdk_type)
+          ok = ok && pType.includes(sdk_type.toLowerCase());
 
-  if (sdkQuery || sdk_type || sdk_offset || sdk_size) {
-    const props = sdk.Object.properties;
+        if (sdk_offset)
+          ok = ok && Number(prop.offset) === Number(sdk_offset);
 
-    sdkMatches = props.filter(prop => {
-      let ok = true;
+        if (sdk_size)
+          ok = ok && Number(prop.size) === Number(sdk_size);
 
-      if (sdkQuery) ok = ok && fuzzy(prop.name, sdkQuery);
-      if (sdk_type) ok = ok && fuzzy(prop.type, sdk_type);
-      if (sdk_offset) ok = ok && prop.offset == sdk_offset;
-      if (sdk_size) ok = ok && prop.size == sdk_size;
+        return ok;
+      });
+    } catch (err) {
+      console.error("SDK SEARCH ERROR →", err);
+      sdkMatches = [];
+    }
 
-      return ok;
+    // -----------------------------
+    // 4. RETURN RESPONSE
+    // -----------------------------
+    return res.status(200).json({
+      success: true,
+      total_results:
+        accountMatches.length + itemMatches.length + sdkMatches.length,
+
+      accounts: accountMatches,
+      items: itemMatches,
+      sdk: sdkMatches
+    });
+
+  } catch (mainErr) {
+    console.error("FATAL SEARCH CRASH →", mainErr);
+    return res.status(500).json({
+      success: false,
+      error: "Search engine crashed internally. Check logs."
     });
   }
-
-  // ---------------------------
-  // ⭐ SEARCH ITEM.JSON
-  // ---------------------------
-  let itemMatches = [];
-
-  if (itemQuery || item_id) {
-    itemMatches = Object.values(items).filter(item => {
-      let ok = true;
-
-      if (itemQuery) ok = ok && fuzzy(item.name || "", itemQuery);
-      if (item_id) ok = ok && item.id == item_id;
-
-      return ok;
-    });
-  }
-
-  const t1 = Date.now();
-
-  // ---------------------------
-  // ⭐ FINAL RESPONSE
-  // ---------------------------
-  res.status(200).json({
-    success: true,
-    execution_ms: t1 - t0,
-
-    steam_accounts: {
-      total: total_accounts,
-      page,
-      limit,
-      results: paginated_accounts
-    },
-
-    sdk_properties: sdkMatches,
-    item_data: itemMatches
-  });
-};
+}
