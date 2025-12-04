@@ -9,146 +9,120 @@ export default function handler(req, res) {
 <title>M2H Steam API – Developer Portal</title>
 <meta name="viewport" content="width=device-width, initial-scale=1">
 
-<style>
-:root {
-  --bg:#f5f5f7;
-  --text:#1d1d1f;
-  --glass:rgba(255,255,255,.55);
-  --glass-dark:rgba(30,30,35,.35);
-  --border:rgba(0,0,0,.15);
+/* -------------------------------
+   Modern API Section Layout (V8)
+--------------------------------*/
+.apiSection {
+  margin: 50px auto;
+  max-width: 850px;
 }
 
-/* -------------------------------
-     BODY LAYOUT
---------------------------------*/
-body {
-  margin:0;
-  font-family:-apple-system,BlinkMacSystemFont,"Inter",sans-serif;
-  background:var(--bg);
-  display:flex;
-  flex-direction:row;
-}
-
-/* -------------------------------
-     HEADER (VisionOS style)
---------------------------------*/
-#topBar {
-  width:100%;
-  height:60px;
-  position:fixed;
-  top:0;
-  left:0;
-  background:var(--glass);
-  backdrop-filter:blur(22px);
-  border-bottom:1px solid var(--border);
+.sectionHeader {
   display:flex;
   align-items:center;
-  justify-content:space-between;
-  padding:0 22px;
-  z-index:2000;
+  gap:18px;
+  margin-bottom:8px;
 }
 
-#topBar .title {
-  font-size:20px;
+.sectionHeader h2 {
+  margin:0;
+  font-size:30px;
   font-weight:600;
-  color:var(--text);
 }
 
-#menuBtn {
-  display:none;
-  padding:10px 14px;
-  font-size:20px;
-  background:var(--glass-dark);
-  border:none;
-  border-radius:12px;
-  color:white;
-}
-
-/* -------------------------------
-     SIDEBAR (Floating Vision UI)
---------------------------------*/
-#sidebar {
-  position:fixed;
-  left:0;
-  top:60px;
-  width:260px;
-  height:calc(100vh - 60px);
+.iconBox {
+  width:48px;
+  height:48px;
+  border-radius:14px;
   background:var(--glass);
-  border-right:1px solid var(--border);
-  backdrop-filter:blur(25px);
-  padding:25px 18px;
-  overflow-y:auto;
-  transition:left .35s ease;
-  z-index:1500;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-size:22px;
+  border:1px solid var(--border);
+  backdrop-filter:blur(16px);
 }
 
-#sidebar a {
-  display:block;
-  padding:10px;
-  margin-bottom:6px;
-  border-radius:12px;
-  text-decoration:none;
-  font-size:15px;
-  color:var(--text);
-}
-
-#sidebar a.active {
-  background:#007aff;
-  color:white;
-}
-
-/* -------------------------------
-     MAIN CONTENT
---------------------------------*/
-.main {
-  margin-left:260px;
-  margin-top:60px;
-  padding:40px;
-  width:100%;
-  max-width:1200px;
-}
-
-/* HERO */
-.hero h1 {
-  font-size:48px;
-  font-weight:700;
-  text-align:center;
-  background:linear-gradient(120deg,#007aff,#ff2d55);
-  -webkit-background-clip:text;
-  -webkit-text-fill-color:transparent;
-}
-
-.hero p {
-  text-align:center;
+.subText {
   opacity:.7;
-  font-size:18px;
+  margin-top:0;
+  margin-bottom:20px;
+  font-size:15px;
 }
 
-/* CARDS */
+/* Modern Card */
 .card {
   background:var(--glass);
-  border-radius:18px;
+  border-radius:20px;
   border:1px solid var(--border);
-  backdrop-filter:blur(22px);
-  padding:20px;
-  margin:25px auto;
-  max-width:850px;
+  box-shadow:0 20px 40px rgba(0,0,0,.05);
+  padding:22px;
+  backdrop-filter:blur(25px);
 }
 
-/* RESPONSIVENESS */
-@media(max-width:900px) {
-  #sidebar {
-    left:-260px;
-  }
-  #menuBtn {
-    display:block;
-  }
-  .main {
-    margin-left:0;
-    padding:28px;
-  }
+/* Responsive Inputs */
+.card label {
+  font-weight:600;
+  font-size:14px;
+  margin-top:12px;
+  display:block;
 }
-</style>
+
+.card input {
+  width:100%;
+  padding:12px;
+  border-radius:12px;
+  border:1px solid var(--border);
+  margin-bottom:10px;
+  font-size:15px;
+  background:white;
+}
+
+/* Execute Button */
+.card button {
+  padding:12px;
+  width:100%;
+  border-radius:14px;
+  border:none;
+  background:#007aff;
+  color:white;
+  font-size:16px;
+  margin-top:10px;
+  cursor:pointer;
+  font-weight:600;
+  transition:all .2s;
+}
+
+.card button:hover {
+  background:#0063cc;
+}
+
+/* Pretty Output Box */
+.card pre {
+  background:#111;
+  color:#fff;
+  padding:15px;
+  border-radius:14px;
+  margin-top:15px;
+  max-height:300px;
+  overflow:auto;
+  font-size:14px;
+  box-shadow:inset 0 0 20px rgba(255,255,255,0.05);
+}
+
+/* Responsive Section */
+@media (max-width:900px) {
+  .apiSection { margin-top:40px; }
+  .sectionHeader h2 { font-size:26px; }
+}
+
+@media (max-width:500px) {
+  .apiSection { margin-top:30px; }
+  .sectionHeader { gap:14px; }
+  .sectionHeader h2 { font-size:22px; }
+  .iconBox { width:40px; height:40px; font-size:18px; }
+}
+
 
 
 </head>
@@ -163,14 +137,22 @@ body {
 <div id="sidebar"></div>
 
 <div class="main">
-  <div class="hero">
-    <h1>Steam API Developer Portal</h1>
-    <p>Apple Developer–style interactive playground for your Accounts, Items & SDK APIs.</p>
-  </div>
 
-  <!-- ACCOUNTS -->
-  <section id="accounts">
-    <h2>🔍 Accounts API</h2>
+  <!-- HERO -->
+  <section class="hero">
+    <h1>Steam API Developer Console</h1>
+    <p>The fastest lightweight API exploration tool with Apple-style design & real-time playground.</p>
+  </section>
+
+  <!-- MODERN SECTION: ACCOUNTS -->
+  <section class="apiSection" id="accounts">
+    <div class="sectionHeader">
+      <div class="iconBox">🔍</div>
+      <h2>Accounts API</h2>
+    </div>
+
+    <p class="subText">Search Steam accounts using username, region, or owned games.</p>
+
     <div class="card">
       <label>Username</label>
       <input id="acc_username">
@@ -181,14 +163,20 @@ body {
       <label>Game</label>
       <input id="acc_game">
 
-      <button onclick="runAccounts()">Run</button>
-      <pre id="accOut">Waiting...</pre>
+      <button onclick="runAccounts()">Execute</button>
+      <pre id="accOut">Awaiting query...</pre>
     </div>
   </section>
 
-  <!-- ITEMS -->
-  <section id="items">
-    <h2>🎒 Items API</h2>
+  <!-- MODERN SECTION: ITEMS -->
+  <section class="apiSection" id="items">
+    <div class="sectionHeader">
+      <div class="iconBox">🎒</div>
+      <h2>Items API</h2>
+    </div>
+
+    <p class="subText">Search item metadata from your items.json database.</p>
+
     <div class="card">
       <label>Item Name</label>
       <input id="item_name">
@@ -196,14 +184,20 @@ body {
       <label>Item ID</label>
       <input id="item_id">
 
-      <button onclick="runItems()">Run</button>
-      <pre id="itemOut">Waiting...</pre>
+      <button onclick="runItems()">Execute</button>
+      <pre id="itemOut">Awaiting query...</pre>
     </div>
   </section>
 
-  <!-- SDK -->
-  <section id="sdk">
-    <h2>🧩 SDK API</h2>
+  <!-- MODERN SECTION: SDK -->
+  <section class="apiSection" id="sdk">
+    <div class="sectionHeader">
+      <div class="iconBox">🧩</div>
+      <h2>SDK API</h2>
+    </div>
+
+    <p class="subText">Search SDK struct properties such as name, type, offset, and size.</p>
+
     <div class="card">
       <label>Name</label>
       <input id="sdk_name">
@@ -217,21 +211,28 @@ body {
       <label>Size</label>
       <input id="sdk_size">
 
-      <button onclick="runSDK()">Run</button>
-      <pre id="sdkOut">Waiting...</pre>
+      <button onclick="runSDK()">Execute</button>
+      <pre id="sdkOut">Awaiting query...</pre>
     </div>
   </section>
 
-  <!-- AUTH -->
-  <section id="auth">
-    <h2>🔐 Authentication</h2>
+  <!-- MODERN SECTION: AUTH -->
+  <section class="apiSection" id="auth">
+    <div class="sectionHeader">
+      <div class="iconBox">🔐</div>
+      <h2>Authentication</h2>
+    </div>
+
+    <p class="subText">Generate API keys for authenticated requests. Key is optional (Mode C).</p>
+
     <div class="card">
-      <p>API Key is optional (Mode C). If used, responses show <code>"authenticated": true</code>.</p>
-      <button onclick="generateKey()">Generate API Key</button>
+      <button onclick="generateKey()">Generate Key</button>
       <pre id="keyOut">No key yet.</pre>
     </div>
   </section>
+
 </div>
+
 
 <!-- Load Combined UI Scripts -->
 <script src="/api/ui?module=sidebar"></script>
