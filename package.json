@@ -1,16 +1,10 @@
 {
-  "name": "steam-api",
+  "name": "steam-search-api",
   "version": "1.0.0",
-  "description": "Steam account search API deployed on Vercel",
   "type": "module",
-  "main": "api/search.js",
   "scripts": {
     "dev": "vercel dev",
-    "start": "node api/search.js",
     "deploy": "vercel --prod"
   },
-  "dependencies": {
-    "vercel": "^33.0.0"
-  },
-  "license": "MIT"
+  "dependencies": {}
 }
