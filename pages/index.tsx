@@ -1,40 +1,45 @@
-import type { NextPage } from "next";
-import Head from "next/head";
-import useSWR from "swr";
-import Header from "../components/Header";
-import Footer from "../components/Footer";
-import GameCard from "../components/GameCard";
-import SearchBar from "../components/SearchBar";
-import { Game } from "../types";
+import Head from 'next/head';
+import React from 'react';
 
-const fetcher = (url: string) => fetch(url).then((res) => res.json());
-
-const Home: NextPage = () => {
-  const { data, error } = useSWR<Game[]>("/api/games/popular", fetcher);
-
+export default function Home() {
   return (
     <>
       <Head>
         <title>Steam Game Explorer</title>
-        <meta name="description" content="Browse and search Steam games" />
-        <link rel="icon" href="/favicon.ico" />
+        <meta name="description" content="Discover and explore Steam games" />
       </Head>
-      <Header />
-      <main className="container mx-auto px-4 py-8">
-        <SearchBar />
-        {error && <p className="text-red-500">Failed to load games.</p>}
-        {(!data && !error) && <p>Loading...</p>}
-        {data && (
-          <section className="grid gap-6 grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 mt-8">
-            {data.map((game) => (
-              <GameCard key={game.appid} game={game} />
-            ))}
+      <div className="min-h-screen bg-gray-100 flex flex-col">
+        <header className="bg-blue-600 text-white py-12 text-center">
+          <h1 className="text-4xl font-bold">Steam Game Explorer</h1>
+          <p className="mt-2 text-lg">Find your next favorite game</p>
+        </header>
+        <main className="container mx-auto px-4 py-8 flex-1">
+          <div className="flex justify-center mb-8">
+            <input
+              type="text"
+              placeholder="Search games..."
+              className="w-full max-w-md px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+            />
+          </div>
+          <section>
+            <h2 className="text-2xl font-semibold mb-4">Featured Games</h2>
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+              {Array.from({ length: 8 }).map((_, i) => (
+                <div
+                  key={i}
+                  className="bg-white rounded-lg shadow p-4 flex flex-col items-center"
+                >
+                  <div className="w-24 h-24 bg-gray-200 rounded mb-2"></div>
+                  <h3 className="font-medium">Game {i + 1}</h3>
+                </div>
+              ))}
+            </div>
           </section>
-        ))}
-      </main>
-      <Footer />
+        </main>
+        <footer className="bg-gray-800 text-gray-300 py-4 text-center">
+          <p>&copy; {new Date().getFullYear()} Steam Game Explorer</p>
+        </footer>
+      </div>
     </>
   );
-};
-
-export default Home;
+}
